@@ -1,0 +1,8 @@
+[
+ {"account":"Brightline Logistics","signals":["champion left","logins down 40%","backup escalation 30h","new IT director evaluating vendors"],"expected":"high"},
+ {"account":"Northwind Health","signals":["QBR positive","tickets resolved within SLA","upsell in proposal"],"expected":"low"},
+ {"account":"Cedar Retail","signals":["budget freeze announced","NPS dropped from 8 to 5"],"expected":"medium"},
+ {"account":"Harbor Legal","signals":["expanded seats","exec sponsor engaged"],"expected":"low"},
+ {"account":"Pine Manufacturing","signals":["competitor demo requested","late invoice payment","champion left"],"expected":"high"},
+ {"account":"Summit Schools","signals":["support tickets up 25%","renewal in 30 days"],"expected":"medium"}
+]
