@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Renewal Risk Agent + Evals · Nae Kitakado</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cocoa:#5B3A3A;--ink:#3E2A2F;--mauve:#8A6470;--blush:#FBE3EC;--pink:#F4B4CD;--rose:#F2A7C3;--card:#fff;--bg:#FDF4F7;--line:#F3D3DF}
+*{box-sizing:border-box}body{margin:0;font-family:'DM Sans',Inter,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 48px}
+.hero{background:linear-gradient(120deg,var(--blush),var(--pink));border-radius:24px;padding:28px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.3)}
+.tag{display:inline-block;background:#fff;color:var(--cocoa);font-size:12px;letter-spacing:.14em;font-weight:600;border-radius:99px;padding:4px 12px}
+h1{color:var(--cocoa);font-size:clamp(28px,5vw,44px);margin:10px 0 6px;font-weight:600}
+.hero p{margin:0;max-width:640px;position:relative;z-index:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--cocoa);margin:0 0 12px}
+label{font-size:13px;font-weight:600;color:var(--mauve);display:block;margin:10px 0 4px}
+select,textarea,input{width:100%;font:inherit;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;color:var(--ink)}
+input[type=range],input[type=checkbox]{accent-color:var(--cocoa)}textarea{min-height:120px;resize:vertical}
+button{background:var(--cocoa);color:#fff;border:0;border-radius:99px;padding:11px 20px;font:inherit;font-weight:600;letter-spacing:.06em;cursor:pointer;margin-top:12px}
+button.ghost{background:#fff;color:var(--cocoa);border:1px solid var(--rose)}
+.pill{display:inline-block;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600;margin:2px}
+.high{background:#F9D0D6;color:#8A2C3A}.medium{background:#FCE6C8;color:#7A4E12}.low{background:#DDF1E4;color:#1E5A36}
+ul{padding-left:18px;margin:6px 0}li{margin:4px 0}li::marker{color:var(--rose)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}th{color:var(--mauve)}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}.kpi div{flex:1;min-width:120px;background:var(--blush);border-radius:14px;padding:12px}.kpi b{display:block;font-size:24px;color:var(--cocoa)}
+pre{background:#2E1F23;color:#FBE3EC;border-radius:12px;padding:12px;font-size:12px;overflow:auto;max-height:320px}
+footer{text-align:center;font-size:13px;color:var(--mauve);margin-top:28px}a{color:var(--cocoa)}
+.muted{color:var(--mauve);font-size:13px}
+</style></head><body><div class="wrap">
+<div class="hero"><span class="tag">LIVE DEMO</span><h1>Renewal Risk Agent + Evals</h1>
+<p>Tick the signals for an account to see an explainable churn-risk score and a next-best action. Then adjust the rule weights and re-run the evaluation harness to check whether accuracy still clears the release gate.</p></div>
+<div class="grid">
+<div class="card"><h2>1 · Score an account</h2><label>Account name</label><input id="name" value="Brightline Logistics"><div id="sig" style="margin-top:10px"></div></div>
+<div class="card"><h2>2 · Result</h2><div id="res"></div></div></div>
+<div class="grid"><div class="card"><h2>Rule weights (editable)</h2><div id="w"></div></div>
+<div class="card"><h2>Evaluation harness</h2><p class="muted">6 labeled accounts · release gate: accuracy ≥ 80%</p><button onclick="evalRun()">RUN EVALS</button><div id="ev" style="margin-top:12px"></div></div></div>
+<script>
+const W={"champion left":3,"competitor demo":3,"evaluating vendors":2,"logins down":2,"escalation":2,"budget freeze":2,"nps dropped":1,"tickets up":1,"late invoice":1,"renewal in 30 days":1,"positive qbr":-1,"expanded seats":-2,"exec sponsor engaged":-1,"upsell in proposal":-1,"within sla":-1};
+const SET=[["Brightline Logistics",["champion left","logins down","escalation","evaluating vendors"],"high"],["Northwind Health",["positive qbr","within sla","upsell in proposal"],"low"],["Cedar Retail",["budget freeze","nps dropped"],"medium"],["Harbor Legal",["expanded seats","exec sponsor engaged"],"low"],["Pine Manufacturing",["competitor demo","late invoice","champion left"],"high"],["Summit Schools",["tickets up","renewal in 30 days"],"medium"]];
+const $=id=>document.getElementById(id);
+$("sig").innerHTML=Object.keys(W).map(k=>`<label style="display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink);margin:4px 0"><input type="checkbox" style="width:auto" value="${k}" ${SET[0][1].includes(k)?"checked":""} onchange="score_()"> ${k}</label>`).join("");
+$("w").innerHTML="<table>"+Object.keys(W).map(k=>`<tr><td>${k}</td><td style="width:80px"><input type="number" value="${W[k]}" style="padding:4px" onchange="W['${k}']=+this.value;score_()"></td></tr>`).join("")+"</table>";
+function score(s){const p=s.reduce((t,k)=>t+(W[k]||0),0);return{p,level:p>=5?"high":p>=2?"medium":"low",drivers:s.filter(k=>W[k]>0)}}
+function nba(n,l){return l=="high"?`Escalate ${n} to exec review this week and rebuild the champion map.`:l=="medium"?`Schedule a value review with ${n} before renewal.`:`Keep ${n} on standard cadence and explore expansion.`}
+function score_(){const s=[...document.querySelectorAll("#sig input:checked")].map(i=>i.value),r=score(s),n=$("name").value||"This account";
+ $("res").innerHTML=`<span class="pill ${r.level}" style="font-size:16px;padding:6px 16px">${r.level.toUpperCase()} RISK</span> <span class="muted">${r.p} points</span>
+ <h2 style="margin-top:16px">Why (risk drivers)</h2><ul>${r.drivers.map(d=>`<li>${d} (+${W[d]})</li>`).join("")||"<li>No negative signals</li>"}</ul><h2>Next-best action</h2><p>${nba(n,r.level)}</p>`}
+function evalRun(){let ok=0;const rows=SET.map(([n,s,e])=>{const g=score(s).level;if(g==e)ok++;return`<tr><td>${n}</td><td><span class="pill ${e}">${e}</span></td><td><span class="pill ${g}">${g}</span></td><td>${g==e?"✅":"❌"}</td></tr>`});
+ const acc=ok/SET.length,pass=acc>=0.8;
+ $("ev").innerHTML=`<div class="kpi"><div><b>${Math.round(acc*100)}%</b>accuracy</div><div><b style="color:${pass?'#1E5A36':'#8A2C3A'}">${pass?"PASS":"FAIL"}</b>release gate</div></div><table style="margin-top:10px"><tr><th>Account</th><th>Expected</th><th>Got</th><th></th></tr>${rows.join("")}</table>${pass?"":"<p><b>Blocked:</b> these weight changes would make predictions worse. Don't ship.</p>"}`}
+$("name").oninput=score_;score_();evalRun();
+</script>
+<footer>Built by <b>Nae Kitakado</b>, AI Automation Consultant · <a href="https://github.com/naekitakadoportfolio">GitHub</a> · <a href="https://www.linkedin.com/in/nae-k-203194265">LinkedIn</a> · <a href="https://sider.ai/agents/web-creator/share/695ea81100a621619985fdfb">Portfolio</a><br>All data is fictional. This demo runs entirely in your browser.</footer></div></body></html>

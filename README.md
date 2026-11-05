@@ -7,6 +7,8 @@
 <a href="https://sider.ai/agents/web-creator/share/695ea81100a621619985fdfb"><img src="https://img.shields.io/badge/Portfolio-Nae_Kitakado-F4B4CD?style=flat-square"></a>
 </p>
 
+<p align="center"><a href="https://naekitakadoportfolio.github.io/renewal-risk-agent-evals/"><img src="https://img.shields.io/badge/%E2%96%B6%20Try%20the%20live%20demo-5B3A3A?style=for-the-badge" alt="Live demo"></a></p>
+
 # Renewal Risk Agent + Evaluation Harness
 
 Flags customer accounts at risk of churning before renewal, explains **why** (risk drivers), and recommends a **next-best action**. The repo also includes an **evaluation harness** that checks the scorer against a labeled dataset before any change ships.
